@@ -47,7 +47,7 @@ public class FollowingServiceImpl implements FollowingService{
         followingRepository.deleteById(id);
     }
 
-    static User unwrapUser(Optional<User> entity, String username) {
+    private static User unwrapUser(Optional<User> entity, String username) {
         if (entity.isPresent()) return entity.get();
         else throw new EntityNotFoundException(username, User.class);
     }
