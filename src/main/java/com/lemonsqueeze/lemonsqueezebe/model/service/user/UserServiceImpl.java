@@ -1,13 +1,12 @@
 package com.lemonsqueeze.lemonsqueezebe.model.service.user;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.lemonsqueeze.lemonsqueezebe.exception.EntityNotFoundException;
-import com.lemonsqueeze.lemonsqueezebe.exception.UserAlreadyExistsException;
 import com.lemonsqueeze.lemonsqueezebe.model.entity.User;
 import com.lemonsqueeze.lemonsqueezebe.model.entity.generic.GenericResponse;
 import com.lemonsqueeze.lemonsqueezebe.model.entity.generic.Meta;
@@ -30,20 +29,21 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
             return getGenericResponse(HttpStatus.CREATED, null, "User has been added successfully!");
         } else {
-            throw new UserAlreadyExistsException(user.getUsername());
+            return getGenericResponse(HttpStatus.BAD_REQUEST, null, "Username already exists!");
         }   
     }
 
     @Override
-    public User getUserByUserName(String username) {
+    public GenericResponse getUserByUserName(String username) {
         Optional<User> user = userRepository.findById(username);
         if (user.isPresent()) {
-            // JsonObject jsonObject = new JsonObject();
-            // jsonObject.addProperty("username", user.getUsername());
-            // jsonObject.addProperty("emailId", user.getEmailId());
-            return user.get();
+            HashMap<String, String> hm = new HashMap<>();
+            hm.put("username", user.get().getUsername());
+            hm.put("email_id", user.get().getEmailId());
+
+            return getGenericResponse(HttpStatus.OK, hm, null);
         } else {
-            throw new EntityNotFoundException(username, User.class);
+            return getGenericResponse(HttpStatus.NOT_FOUND, null, "User not found!");
         }
     }
 
@@ -63,5 +63,4 @@ public class UserServiceImpl implements UserService {
         response.setData(object);
         return response;
     }
-    
 }

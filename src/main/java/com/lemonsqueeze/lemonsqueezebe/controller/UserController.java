@@ -30,8 +30,14 @@ public class UserController {
     RecipeService recipeService;
     
     @GetMapping("/{username}")
-    public ResponseEntity<String> getUserByUserName(@PathVariable String username) {
-        return new ResponseEntity<>(userService.getUserByUserName(username).getEmailId(), HttpStatus.OK);
+    public ResponseEntity<GenericResponse> getUserByUserName(@PathVariable String username) {
+        GenericResponse response = userService.getUserByUserName(username);
+
+        if (response.getMeta().getStatus().equals(HttpStatus.NOT_FOUND.toString())) {
+            return new ResponseEntity<GenericResponse>(response, HttpStatus.NOT_FOUND);
+        }
+        
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/register")
@@ -41,6 +47,9 @@ public class UserController {
             for (Recipe recipe: StartesJuices.getStarterJuices()) {
                 recipeService.addRecipe(recipe, user.getUsername());
             }
+        }
+        if (genericResponse.getMeta().getStatus().equals(HttpStatus.BAD_REQUEST.toString())) {
+            return new ResponseEntity<GenericResponse>(genericResponse, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(genericResponse, HttpStatus.CREATED);
     }
