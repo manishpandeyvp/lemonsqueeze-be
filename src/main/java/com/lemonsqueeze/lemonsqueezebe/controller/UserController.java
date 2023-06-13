@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lemonsqueeze.lemonsqueezebe.model.entity.Recipe;
 import com.lemonsqueeze.lemonsqueezebe.model.entity.User;
+import com.lemonsqueeze.lemonsqueezebe.model.entity.generic.GenericResponse;
 import com.lemonsqueeze.lemonsqueezebe.model.service.recipe.RecipeService;
 import com.lemonsqueeze.lemonsqueezebe.model.service.user.UserService;
 import com.lemonsqueeze.lemonsqueezebe.utility.StartesJuices;
@@ -34,14 +35,14 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
-        userService.addUser(user);
+    public ResponseEntity<GenericResponse> addUser(@Valid @RequestBody User user) {
+        GenericResponse genericResponse = userService.addUser(user);
         if (user.getUsername().equals("manishpandeyvp")) {
             for (Recipe recipe: StartesJuices.getStarterJuices()) {
                 recipeService.addRecipe(recipe, user.getUsername());
             }
         }
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(genericResponse, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{username}")
