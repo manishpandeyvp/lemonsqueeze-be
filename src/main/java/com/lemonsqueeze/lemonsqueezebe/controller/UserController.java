@@ -31,7 +31,7 @@ public class UserController {
     
     @GetMapping("/{username}")
     public ResponseEntity<GenericResponse> getUserByUserName(@PathVariable String username) {
-        GenericResponse response = userService.getUserByUserName(username);
+        GenericResponse response = userService.getUserDetailsByUserName(username);
 
         if (response.getMeta().getStatus().equals(HttpStatus.NOT_FOUND.toString())) {
             return new ResponseEntity<GenericResponse>(response, HttpStatus.NOT_FOUND);
